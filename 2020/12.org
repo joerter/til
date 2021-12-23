@@ -23,5 +23,70 @@
 **** My emacs config is starting to become useful now
 **** DONE Still need to learn some better buffer management commands around deleting buffers
 ***** Haha I just learned that c-d on counsel-buffer will delete the buffer. Perfect!
-**** TODO Learn about eshell
+**** DONE Learn about eshell
 **** I learned a few things about projectile by reading the readme.
+** Thursday, December 23
+*** Using `@stacks/conect` to authenticate a web3 app on stacks blockchain
+- I was using this repo as an example: https://github.com/hirosystems/todos
+- Ended up with this code to authenticate a user in my park-miami app:
+#+BEGIN_SRC javascript
+import { AppConfig, showConnect, UserSession } from '@stacks/connect';
+import { Person } from '@stacks/profile';
+import miamicoin from '../miamicoin.svg';
+
+const appConfig = new AppConfig(['store_write', 'publish_data']);
+export const userSession = new UserSession({ appConfig });
+
+export function authenticate() {
+  showConnect({
+    appDetails: {
+      name: 'Park Miami',
+      icon: `${miamicoin}`,
+    },
+    redirectTo: '/',
+    onFinish: () => {
+      window.location.reload();
+    },
+    userSession: userSession,
+  });
+}
+
+export function getUserData() {
+  return userSession.loadUserData();
+}
+
+export function getPerson() {
+  return new Person(getUserData().profile);
+}
+#+END_SRC
+- However, when I used that code in my app, I got an error about webpack 5 not including node.js polyfills:
+BREAKING CHANGE: webpack < 5 used to include polyfills for node.js core modules by default
+- Apparently, webpack used to automatically alias some native nodejs modules. This is explained here: https://webpack.js.org/configuration/resolve/#resolvefallback
+- So I had to `eject` from `create-react-app` and add the following to the fallback in webpack.config.js:
+#+BEGIN_SRC javascript
+  {
+    // ...
+    fallback: {
+      stream: require.resolve('stream-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      buffer: require.resolve('buffer'),
+    },
+    // ...
+  }
+#+END_SRC
+- But then, I started getting errors about `Buffer` not being defined. After googling around, I found a few links:
+https://stackoverflow.com/questions/68707553/uncaught-referenceerror-buffer-is-not-defined
+https://github.com/webpack/changelog-v5/issues/10
+- So I added this to the `plugins` section:
+#+BEGIN_SRC javascript
+  {
+  // ...
+    plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
+    ],
+//... 
+  }
+#+END_SRC
+- After that, things seem to be working again!
