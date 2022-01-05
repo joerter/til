@@ -1,0 +1,3 @@
+* Wednesday, January 5
+** Emacs
+*** Learned about origami for code folding. Need to add some better keybindings using hydra
