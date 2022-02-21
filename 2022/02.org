@@ -1,0 +1,9 @@
+* Friday, February 18
+** Vim
+*** Updated vim plugins
+*** Updated nvim tree setup
+*** Learned about ctags
+**** https://medium.com/trabe/navigate-es6-projects-with-vim-using-ctags-948d114b94f3
+**** Setup ctags using this article and telescope
+**** https://github.com/jb55/typescript-ctags
+**** https://github.com/ludovicchabant/vim-gutentags
